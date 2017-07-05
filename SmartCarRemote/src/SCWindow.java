@@ -12,25 +12,29 @@ import javax.swing.JTextField;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import java.awt.event.*;
-import java.awt.Container;
 import java.io.*;
 
 
 public class SCWindow extends JFrame {
 	
 	/**
-	 * 
+	 * This is the UI Window. It has two text boxes (host and port) and a 
+	 * button (connect). When the user presses the connect button, SCWindow 
+	 * creates a new SCConnect object that will send commands to the server.
 	 */
+	
 	private static final long serialVersionUID = 1L;
 	static final String newline = System.getProperty("line.separator");
-	KeyAdapter listener;
-	SCConnect sock;
+	KeyAdapter keyListener;
+	SCConnect connectSocket;
 	
 	JTextField hostField, portField;
+	JButton connectButton, disconnectButton;
 	
 
 	public SCWindow(String name) {
 		super(name);
+		keyListener = new KeyListen();
 	}
 
 	private static void createAndShowGUI() {
@@ -49,23 +53,21 @@ public class SCWindow extends JFrame {
 	}
 	
 	private void addComponentsToPane() {
-		hostField = new JTextField("192.168.0.1");
-		portField = new JTextField("1337");
+		hostField = new JTextField("localhost");
+		hostField.setColumns(9);
 		
-		Container pane = getContentPane();
+		portField = new JTextField("11337");
+		portField.setColumns(4);
 		
-		JButton connectButton = new JButton("Connect");
+		connectButton = new JButton("Connect");
 		connectButton.addActionListener(new ButtonListen());
 		
-		GroupLayout layout = new GroupLayout(pane);
-		pane.setLayout(layout);
+		GroupLayout layout = new GroupLayout(getContentPane());
+		getContentPane().setLayout(layout);
 		
 		layout.setAutoCreateGaps(true);
 		layout.setAutoCreateContainerGaps(true);
-		
-		hostField.setColumns(9);
-		portField.setColumns(4);
-		
+
 		layout.setHorizontalGroup(
 			layout.createSequentialGroup()
 				.addComponent(hostField)
@@ -82,6 +84,36 @@ public class SCWindow extends JFrame {
 		);
 	}
 	
+	private void buttonToDisconnect() {
+		hostField.setVisible(false);
+		portField.setVisible(false);
+		connectButton.setText("Disconnect");
+    	addKeyListener(keyListener);
+	}
+	
+	private void buttonToConnect() {
+		hostField.setVisible(true);
+		portField.setVisible(true);
+		connectButton.setText("Connect");
+		removeKeyListener(keyListener);
+		
+		connectSocket.close();
+	}
+	
+	private boolean createSocket() {
+		if (connectSocket == null) {
+			try {
+	        	connectSocket = new SCConnect(hostField.getText(), 
+	        			Integer.parseInt(portField.getText()));
+	        	return true;
+	        } catch (IOException except) {
+	        	System.out.println("Problem connecting. \n" + except);
+	        	System.exit(1);
+	        }
+		}
+		return false;
+	}
+	
 	/**
 	 * @param args
 	 */
@@ -96,38 +128,38 @@ public class SCWindow extends JFrame {
 	}
 	
 private class KeyListen extends KeyAdapter {
-	
-	boolean pressLeft = false, 
-			pressUp = false, 
-			pressRight = false, 
-			pressDown = false;
+	// Keyboard listener.
+	boolean heldLeft = false, 
+			heldUp = false, 
+			heldRight = false, 
+			heldDown = false;
 	
 	/** Key Pressed */
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
         switch (keyCode) {
         case 37:	// Left Arrow
-        	if (!pressLeft) {
+        	if (!heldLeft) {
         		System.out.println("Pressed Left ");
-        		pressLeft = true;
+        		heldLeft = true;
         	}
         	break;
         case 38:	// Up Arrow
-        	if (!pressUp) {
+        	if (!heldUp) {
 	        	System.out.println("Pressed Up ");
-	        	pressUp = true;
+	        	heldUp = true;
         	}
         	break;
         case 39:	// Right Arrow
-        	if (!pressRight) {
+        	if (!heldRight) {
 	        	System.out.println("Pressed Right ");
-	        	pressRight = true;
+	        	heldRight = true;
         	}
         	break;
         case 40:
-        	if (!pressDown) {
+        	if (!heldDown) {
 	        	System.out.println("Pressed Down ");
-	        	pressDown = true;
+	        	heldDown = true;
         	}
         	break;
 	        }
@@ -139,35 +171,33 @@ private class KeyListen extends KeyAdapter {
         switch (keyCode) {
         case 37:	// Left Arrow
         	System.out.println("Left ");
-        	pressLeft = false;
+        	heldLeft = false;
         	break;
         case 38:	// Up Arrow
         	System.out.println("Up ");
-        	pressUp = false;
+        	heldUp = false;
         	break;
         case 39:	// Right Arrow
         	System.out.println("Right ");
-        	pressRight = false;
+        	heldRight = false;
         	break;
-        case 40:
+        case 40:	// Down Arrow
         	System.out.println("Down ");
-        	pressDown = false;
+        	heldDown = false;
         	break;
         }
     }
 }
 
 private class ButtonListen implements ActionListener {
-	public void actionPerformed(ActionEvent buttonE) {
-        try {
-        	sock = new SCConnect(hostField.getText(), Integer.parseInt(portField.getText()));
-        } catch (IOException be) {
-        	System.out.println("Problem connecting." + be);
-        	System.exit(1);
-        }
-        if (sock.connected == true) {
-        	((JButton)buttonE.getSource()).setEnabled(false);
-        	addKeyListener(new KeyListen());
+	// Button listener.
+	public void actionPerformed(ActionEvent be) {
+		// If there is an active socket, change the button to a
+		// disconnect button.
+        if (createSocket()) {	
+        	buttonToDisconnect();
+        } else {
+        	buttonToConnect();
         }
 	}
 }

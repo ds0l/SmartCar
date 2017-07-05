@@ -15,10 +15,10 @@ public class SCConnect {
 	private InetAddress ipAddr;
 	private int portNumber;
 	private Socket remoteSocket = new Socket();
-	protected boolean connected = false;	//true if successful socket connection.
+	protected boolean connected = false;	//True if active socket connection.
 	
 	public SCConnect() throws IOException {
-		this(InetAddress.getByName("192.168.0.1"), 1337);
+		this(InetAddress.getByName("192.168.0.1"), 11337);
 	}
 	
 	public SCConnect(String s, int portNumber) throws IOException {
@@ -50,5 +50,19 @@ public class SCConnect {
 	public int getPort() {
 		return portNumber;
 	}
+	
+	public void close() {
+		try {
+			remoteSocket.close();
+		} catch (IOException e) {
+			System.err.println("Problem closing the socket.");
+			e.printStackTrace();
+		}
+		connected = false;
+	}
+	public void sendLeft () {
+		return;
+	}
+	
 	
 }
