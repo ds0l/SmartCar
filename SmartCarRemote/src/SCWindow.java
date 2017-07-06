@@ -12,8 +12,7 @@ import javax.swing.JTextField;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import java.awt.event.*;
-import java.io.*;
-
+import java.io.IOException;
 
 public class SCWindow extends JFrame {
 	
@@ -84,34 +83,38 @@ public class SCWindow extends JFrame {
 		);
 	}
 	
-	private void buttonToDisconnect() {
-		hostField.setVisible(false);
-		portField.setVisible(false);
+	private void connect() {
+		try {
+			connectSocket = new SCConnect(hostField.getText(),
+	       			Integer.parseInt(portField.getText()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Change the UI.
+		//hostField.setVisible(false);
+		//portField.setVisible(false);
+		hostField.setEditable(false);
+		portField.setEditable(false);
 		connectButton.setText("Disconnect");
     	addKeyListener(keyListener);
 	}
 	
-	private void buttonToConnect() {
-		hostField.setVisible(true);
-		portField.setVisible(true);
+	private void disconnect() {
+		try {
+			connectSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		connectSocket = null;
+		
+		// Change the UI.
+		//hostField.setVisible(true);
+		//portField.setVisible(true);
+		hostField.setEditable(true);
+		portField.setEditable(true);
 		connectButton.setText("Connect");
 		removeKeyListener(keyListener);
-		
-		connectSocket.close();
-	}
-	
-	private boolean createSocket() {
-		if (connectSocket == null) {
-			try {
-	        	connectSocket = new SCConnect(hostField.getText(), 
-	        			Integer.parseInt(portField.getText()));
-	        	return true;
-	        } catch (IOException except) {
-	        	System.out.println("Problem connecting. \n" + except);
-	        	System.exit(1);
-	        }
-		}
-		return false;
 	}
 	
 	/**
@@ -194,10 +197,10 @@ private class ButtonListen implements ActionListener {
 	public void actionPerformed(ActionEvent be) {
 		// If there is an active socket, change the button to a
 		// disconnect button.
-        if (createSocket()) {	
-        	buttonToDisconnect();
+        if (connectSocket == null) {	
+        	connect();
         } else {
-        	buttonToConnect();
+        	disconnect();	// Change button text and disconnect.
         }
 	}
 }
