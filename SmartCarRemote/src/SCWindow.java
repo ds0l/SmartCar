@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 
 /**
  * @author David
@@ -12,7 +10,6 @@ import javax.swing.JTextField;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import java.awt.event.*;
-import java.io.IOException;
 
 public class SCWindow extends JFrame {
 	
@@ -25,7 +22,7 @@ public class SCWindow extends JFrame {
 	private static final long serialVersionUID = 1L;
 	static final String newline = System.getProperty("line.separator");
 	KeyAdapter keyListener;
-	SCConnect connectSocket;
+	SCConnect socketControl;
 	
 	JTextField hostField, portField;
 	JButton connectButton, disconnectButton;
@@ -34,6 +31,7 @@ public class SCWindow extends JFrame {
 	public SCWindow(String name) {
 		super(name);
 		keyListener = new KeyListen();
+		socketControl = new SCConnect();
 	}
 
 	private static void createAndShowGUI() {
@@ -84,29 +82,23 @@ public class SCWindow extends JFrame {
 	}
 	
 	private void connect() {
-		try {
-			connectSocket = new SCConnect(hostField.getText(),
-	       			Integer.parseInt(portField.getText()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		// Change the UI.
 		//hostField.setVisible(false);
 		//portField.setVisible(false);
 		hostField.setEditable(false);
 		portField.setEditable(false);
+		
+		socketControl.connect(hostField.getText(),
+				Integer.parseInt(portField.getText()));
+		
 		connectButton.setText("Disconnect");
+
     	addKeyListener(keyListener);
+    	requestFocusInWindow();
 	}
 	
 	private void disconnect() {
-		try {
-			connectSocket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		connectSocket = null;
+		socketControl.disconnect();
 		
 		// Change the UI.
 		//hostField.setVisible(true);
@@ -140,29 +132,34 @@ private class KeyListen extends KeyAdapter {
 	/** Key Pressed */
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
+        
         switch (keyCode) {
         case 37:	// Left Arrow
         	if (!heldLeft) {
         		System.out.println("Pressed Left ");
         		heldLeft = true;
+        		socketControl.sendCommand(socketControl.GoLeft);
         	}
         	break;
         case 38:	// Up Arrow
         	if (!heldUp) {
 	        	System.out.println("Pressed Up ");
 	        	heldUp = true;
+	        	socketControl.sendCommand(socketControl.GoUp);
         	}
         	break;
         case 39:	// Right Arrow
         	if (!heldRight) {
 	        	System.out.println("Pressed Right ");
 	        	heldRight = true;
+	        	socketControl.sendCommand(socketControl.GoRight);
         	}
         	break;
         case 40:
         	if (!heldDown) {
 	        	System.out.println("Pressed Down ");
 	        	heldDown = true;
+	        	socketControl.sendCommand(socketControl.GoDown);
         	}
         	break;
 	        }
@@ -171,21 +168,26 @@ private class KeyListen extends KeyAdapter {
     /** Key Released */
     public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
+
         switch (keyCode) {
         case 37:	// Left Arrow
         	System.out.println("Left ");
+        	socketControl.sendCommand(socketControl.StopLeft);
         	heldLeft = false;
         	break;
         case 38:	// Up Arrow
         	System.out.println("Up ");
+        	socketControl.sendCommand(socketControl.StopUp);
         	heldUp = false;
         	break;
         case 39:	// Right Arrow
         	System.out.println("Right ");
+        	socketControl.sendCommand(socketControl.StopRight);
         	heldRight = false;
         	break;
         case 40:	// Down Arrow
         	System.out.println("Down ");
+        	socketControl.sendCommand(socketControl.StopDown);
         	heldDown = false;
         	break;
         }
@@ -197,7 +199,7 @@ private class ButtonListen implements ActionListener {
 	public void actionPerformed(ActionEvent be) {
 		// If there is an active socket, change the button to a
 		// disconnect button.
-        if (connectSocket == null) {	
+        if (!socketControl.isConnected()) {	
         	connect();
         } else {
         	disconnect();	// Change button text and disconnect.

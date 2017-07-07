@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 
 /**
  * @author David
@@ -36,15 +34,13 @@ public class SCServer {
         try (
             ServerSocket serverSocket =
                 new ServerSocket(port);
-            Socket clientSocket = serverSocket.accept();     
-            PrintWriter out =
-                new PrintWriter(clientSocket.getOutputStream(), true);                   
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(clientSocket.getInputStream()));
+            Socket clientSocket = serverSocket.accept();                       
+            DataInputStream in = new DataInputStream(clientSocket.getInputStream());
         ) {
-            String inputLine;
-            while ((inputLine = in.readLine()) != null) {
-                out.println(inputLine);
+            short command;
+            while (true) {
+            	command = in.readShort();
+                System.out.println("command: " + command);
             }
         } catch (IOException e) {
             System.out.println("Exception caught when trying to listen on port "
