@@ -138,28 +138,28 @@ private class KeyListen extends KeyAdapter {
         	if (!heldLeft) {
         		System.out.println("Pressed Left ");
         		heldLeft = true;
-        		socketControl.sendCommand(socketControl.GoLeft);
+        		socketControl.sendCommand(SCConnect.GoLeft);
         	}
         	break;
         case 38:	// Up Arrow
         	if (!heldUp) {
 	        	System.out.println("Pressed Up ");
 	        	heldUp = true;
-	        	socketControl.sendCommand(socketControl.GoUp);
+	        	socketControl.sendCommand(SCConnect.GoUp);
         	}
         	break;
         case 39:	// Right Arrow
         	if (!heldRight) {
 	        	System.out.println("Pressed Right ");
 	        	heldRight = true;
-	        	socketControl.sendCommand(socketControl.GoRight);
+	        	socketControl.sendCommand(SCConnect.GoRight);
         	}
         	break;
         case 40:
         	if (!heldDown) {
 	        	System.out.println("Pressed Down ");
 	        	heldDown = true;
-	        	socketControl.sendCommand(socketControl.GoDown);
+	        	socketControl.sendCommand(SCConnect.GoDown);
         	}
         	break;
 	        }
@@ -172,22 +172,22 @@ private class KeyListen extends KeyAdapter {
         switch (keyCode) {
         case 37:	// Left Arrow
         	System.out.println("Left ");
-        	socketControl.sendCommand(socketControl.StopLeft);
+        	socketControl.sendCommand(SCConnect.StopLeft);
         	heldLeft = false;
         	break;
         case 38:	// Up Arrow
         	System.out.println("Up ");
-        	socketControl.sendCommand(socketControl.StopUp);
+        	socketControl.sendCommand(SCConnect.StopUp);
         	heldUp = false;
         	break;
         case 39:	// Right Arrow
         	System.out.println("Right ");
-        	socketControl.sendCommand(socketControl.StopRight);
+        	socketControl.sendCommand(SCConnect.StopRight);
         	heldRight = false;
         	break;
         case 40:	// Down Arrow
         	System.out.println("Down ");
-        	socketControl.sendCommand(socketControl.StopDown);
+        	socketControl.sendCommand(SCConnect.StopDown);
         	heldDown = false;
         	break;
         }

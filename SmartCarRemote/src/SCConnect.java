@@ -16,14 +16,14 @@ public class SCConnect {
 	DataOutputStream out;
 	boolean connected = false;
 	
-	public final short GoLeft = 0;
-	public final short GoUp = 1;
-	public final short GoRight = 2;
-	public final short GoDown = 3;
-	public final short StopLeft = 4;
-	public final short StopUp = 5;
-	public final short StopRight = 6;
-	public final short StopDown = 7;
+	public static final short GoLeft = 0;
+	public static final short GoUp = 1;
+	public static final short GoRight = 2;
+	public static final short GoDown = 3;
+	public static final short StopLeft = 4;
+	public static final short StopUp = 5;
+	public static final short StopRight = 6;
+	public static final short StopDown = 7;
 	
 	public SCConnect() {
 		super();
