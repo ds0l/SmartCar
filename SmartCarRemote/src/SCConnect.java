@@ -16,14 +16,14 @@ public class SCConnect {
 	DataOutputStream out;
 	boolean connected = false;
 	
-	public static final short GoLeft = 0;
-	public static final short GoUp = 1;
-	public static final short GoRight = 2;
-	public static final short GoDown = 3;
-	public static final short StopLeft = 4;
-	public static final short StopUp = 5;
-	public static final short StopRight = 6;
-	public static final short StopDown = 7;
+	public static final byte GoLeft = 0;
+	public static final byte GoUp = 1;
+	public static final byte GoRight = 2;
+	public static final byte GoDown = 3;
+	public static final byte StopLeft = 4;
+	public static final byte StopUp = 5;
+	public static final byte StopRight = 6;
+	public static final byte StopDown = 7;
 	
 	public SCConnect() {
 		super();
@@ -56,9 +56,9 @@ public class SCConnect {
 		return connected;
 	}
 	
-	public void sendCommand (short command) {
+	public void sendCommand (byte command) {
 		try {
-			out.writeShort(command);
+			out.writeByte(command);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
