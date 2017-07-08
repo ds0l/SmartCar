@@ -50,7 +50,7 @@ public class SCWindow extends JFrame {
 	}
 	
 	private void addComponentsToPane() {
-		hostField = new JTextField("localhost");
+		hostField = new JTextField("192.168.0.1");
 		hostField.setColumns(9);
 		
 		portField = new JTextField("11337");
